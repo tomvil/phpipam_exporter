@@ -22,7 +22,7 @@ var (
 	listenAddr  = flag.String("web.listen-address", ":9969", "The address to listen on for HTTP requests")
 	metricsPath = flag.String("web.metrics-path", "/metrics", "Path under which metrics will be exposed")
 	apiAddress  = flag.String("api.address", "http://127.0.0.1:80", "phpIPAM API address")
-	apiUsername = flag.String("api.username", "admin", "phpIPAM API username")
+	apiUsername = flag.String("api.username", "", "phpIPAM API username")
 	apiPassword = flag.String("api.password", "", "phpIPAM API password")
 )
 
@@ -35,6 +35,16 @@ func main() {
 		fmt.Println("Author: Tomas Vilemaitis")
 		fmt.Println("Metric exporter for phpIPAM")
 		os.Exit(0)
+	}
+
+	if *apiUsername == "" {
+		*apiUsername = os.Getenv("PHPIPAM_USERNAME")
+		if *apiUsername == "" {
+			log.Errorln(`Please set the phpIPAM API Username!
+		API Username can be set with api.username flag or
+		by setting PHPIPAM_USERNAME environment variable.`)
+			os.Exit(1)
+		}
 	}
 
 	if *apiPassword == "" {
